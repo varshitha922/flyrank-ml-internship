@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search and Content Refresh Opportunity Scoring</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.7;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 28px 20px;
+      color: #222;
+      background: #f7f8fa;
+    }
+    main {
+      background: white;
+      padding: 32px;
+      border-radius: 12px;
+    }
+    h1, h2 { color: #17365d; }
+    h1 { line-height: 1.25; }
+    h2 {
+      margin-top: 34px;
+      border-bottom: 2px solid #e5eaf0;
+      padding-bottom: 7px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0;
+    }
+    th, td {
+      border: 1px solid #d8dee8;
+      padding: 10px;
+      text-align: left;
+    }
+    th { background: #edf2f8; }
+    .abstract {
+      background: #edf4fb;
+      padding: 18px;
+      border-left: 4px solid #376a9e;
+    }
+    .bar {
+      background: #e6eaf0;
+      height: 18px;
+      border-radius: 5px;
+      overflow: hidden;
+      margin: 6px 0 14px;
+    }
+    .fill { height: 100%; background: #477eae; }
+    .note { color: #555; font-size: 0.95em; }
+    a { color: #175a9c; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Search and Content Refresh Opportunity Scoring</h1>
+  <p><strong>Capstone research paper</strong> | Machine Learning</p>
+
+  <h2>1. Title and Abstract</h2>
+  <div class="abstract">
+    <p>This study asks whether search and content signals can help identify pages that may deserve a content refresh or improvement. It uses the FlyRank ML Internship dataset and evaluates a scoring model using a client-holdout validation design. A Random Forest model achieved a ROC-AUC of 0.885923, while the transparent baseline achieved 0.915891 on the same test split. Therefore, the model did not outperform the baseline in this evaluation. The results are intended to support a review queue, not to prove that a page needs a refresh or that a change will cause better search performance.</p>
+  </div>
+
+  <h2>2. Introduction / Problem Statement</h2>
+  <p>Content teams may have many pages to review and limited time to improve them. This project supports the decision of which pages should be reviewed first for a possible content refresh or improvement.</p>
+  <p>The project uses available search signals to create a prioritization approach. The output is decision-support information for human review, not an automatic instruction to change a page.</p>
+
+  <h2>3. Data</h2>
+  <p>The analysis uses the FlyRank ML Internship warehouse release, including the <code>fact_content_daily_performance</code> table. The selected analysis window is March 1–31, 2026.</p>
+  <p>One row represents one content item for one client on one report date. The selected search features are:</p>
+  <ul>
+    <li><code>gsc_impressions</code></li>
+    <li><code>gsc_clicks</code></li>
+    <li><code>gsc_avg_position</code></li>
+  </ul>
+  <p>Client names, identifying information, private queries, and future-period information were excluded from the public-facing analysis. The modeling dataset contained 320,048 rows. The average-position feature had 198,334 missing values; the other selected fields had no missing values in the reported check.</p>
+  <p class="note">The results reflect this dataset and analysis window; they should not be assumed to represent every website or time period.</p>
+
+  <h2>4. Methodology</h2>
+  <p>The task was framed as scoring pages for review priority. The target was whether a content item received at least one Google Search Console click in the seven days after the scoring date.</p>
+  <p>The selected features were current search impressions, clicks, and average position. A transparent baseline ranked pages using current impressions. The final model was a Random Forest classifier. Both approaches were evaluated on the same client-holdout test split.</p>
+  <p>The training set contained 194,613 rows from 41 clients, and the test set contained 125,435 rows from 11 held-out clients. Missing average-position values were handled using a training-data-based median imputation approach. Future-period fields were excluded to reduce leakage risk.</p>
+
+  <h2>5. Results</h2>
+  <p>The model and baseline were compared using ROC-AUC on the same test split.</p>
+  <table>
+    <thead>
+      <tr><th>Approach</th><th>ROC-AUC</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Random Forest model</td><td>0.885923</td></tr>
+      <tr><td>Transparent impressions baseline</td><td>0.915891</td></tr>
+    </tbody>
+  </table>
+
+  <p><strong>ROC-AUC comparison</strong></p>
+  <p>Random Forest model — 0.885923</p>
+  <div class="bar"><div class="fill" style="width:88.5923%"></div></div>
+  <p>Transparent baseline — 0.915891</p>
+  <div class="bar"><div class="fill" style="width:91.5891%"></div></div>
+
+  <p>The transparent baseline achieved a higher ROC-AUC than the final model. In this evaluation, the model did not outperform the baseline. This result supports keeping the simpler baseline as an important reference when reviewing the scoring approach.</p>
+
+  <h2>6. Limitations and Honest Framing</h2>
+  <ul>
+    <li>The analysis identifies associations and patterns; it does not establish that a content change causes a search-performance improvement.</li>
+    <li>Search history and data availability may differ across clients and content items.</li>
+    <li>Some early records may have incomplete engagement history.</li>
+    <li>The available query window may overlap with the analysis period, which limits how future outcomes should be interpreted.</li>
+    <li>A high score is a prediction signal for review, not proof that a page is outdated or needs a refresh.</li>
+    <li>The baseline performed better than the model on the reported test split.</li>
+  </ul>
+
+  <h2>7. Ranked Recommendations</h2>
+  <p>The following action playbook describes how a team can use the output as a review process. It does not identify or expose individual client pages.</p>
+  <ol>
+    <li><strong>Review the highest-scoring pages:</strong> inspect the page’s purpose, accuracy, and current search performance before deciding whether to update it.</li>
+    <li><strong>Check the search evidence:</strong> compare impressions, clicks, and average position to understand the signals behind the review priority.</li>
+    <li><strong>Choose an appropriate action:</strong> consider improving, protecting, monitoring, or leaving the page unchanged based on human review.</li>
+    <li><strong>Record the decision:</strong> document the reason for the action and the evidence considered.</li>
+    <li><strong>Monitor after any change:</strong> review later performance without assuming that the change alone caused the result.</li>
+  </ol>
+  <p>The top-scoring records included tied scores, so a score alone should not be treated as a unique ordering of every page. Human review and additional context are needed to resolve ties.</p>
+
+  <h2>8. Reproducibility</h2>
+  <p>The capstone notebook and supporting assignment notebooks are maintained in the project repository.</p>
+  <p><a href="https://github.com/varshitha922/flyrank-ml-internship">View the GitHub repository</a></p>
+  <p>The capstone notebook is stored under <code>work/notebooks/</code>. The repository contains the materials used to document the analysis and its results.</p>
+
+  <h2>9. Acknowledgments and Data Credit</h2>
+  <p>Built on the <a href="https://flyrank.ai">FlyRank ML Internship dataset</a>.</p>
+</main>
+</body>
+</html>
